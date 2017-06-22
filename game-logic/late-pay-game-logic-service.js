@@ -245,7 +245,7 @@ exports.getVirginGameState = function(requestParams, response) {
 
 			//  计算奖金
 			result = GameLogicAPI.CalculatePrizeAmountForReelOffsets(losingStartingPositions);
-			if (result.prize > 0) { // 如果奖金大于0，就一直转，直到＝0为止！
+			if (result.prize > 0) { // 如果奖金大于0，就一直循环这个事件，直到＝0为止！
 				GameLogicAPI.generateRandomReelOffsets(gameRandom);				
 			} else {
 				console.log("VIRGIN STATE FINISHED");
