@@ -232,17 +232,20 @@ exports.getVirginGameState = function(requestParams, response) {
 	if (requestParams) {
 		dataRetrievalContext = RemoteDataServiceAPI.DataRetrievalContext(
 				requestParams.TokenRandom, requestParams.TokenProgressive);
+		//
 		gameRandom = RandomDataServiceAPI.GameRandom(dataRetrievalContext);	
 
+		// (comms-hub.js)function receiveResponse, 触发了getRandomNumberJsonRpc2ResponseReceived事件
 		gameRandom.on('getRandomNumberJsonRpc2ResponseReceived', function(responseBody) {
 			var result, jsonRpc2ResponseJSON = JSON.parse(responseBody);
 			
 			receivedData = jsonRpc2ResponseJSON.result.Data;
 			losingStartingPositions = GameLogicAPI.generateRandomReelOffsetsAfterRandomNumberReceived(receivedData);
 			//losingStartingPositions = [6, 10, 11];
-			
+
+			//  计算奖金
 			result = GameLogicAPI.CalculatePrizeAmountForReelOffsets(losingStartingPositions);
-			if (result.prize > 0) {
+			if (result.prize > 0) { // 如果奖金大于0，就一直转，直到＝0为止！
 				GameLogicAPI.generateRandomReelOffsets(gameRandom);				
 			} else {
 				console.log("VIRGIN STATE FINISHED");
@@ -263,6 +266,7 @@ exports.getVirginGameState = function(requestParams, response) {
 			}
 		});
 
+		// 这里会触发getRandomNumberJsonRpc2ResponseReceived事件，最终在(comms-hub.js)function receiveResponse
 		GameLogicAPI.generateRandomReelOffsets(gameRandom);
 	}
 };

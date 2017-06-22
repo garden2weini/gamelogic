@@ -18,14 +18,10 @@ function RemoteRandomDataService(serviceURI) {
 	return remoteRandomDataService;
 }
 
-function ExplodingGameRandom() {
-	EventEmitter.call(this); // call方法使得MExplodingGameRandom对象继承了EventEmitter对象上的方法
-	
-	this.token = 'INVALID';
-	this.acceptingRequests = true;
-}
+
 
 /**
+ * 这里是真正的获取随机数方法
  * method: getRandomNumer
  * @param randomDataRequest
  * @param urlRest
@@ -52,16 +48,24 @@ function RandomNumber(token, urlRest, cumulativeReelBandLengthProduct) {
 	return randomNumber;
 }
 
+function ExplodingGameRandom() {
+    EventEmitter.call(this); // call方法使得ExplodingGameRandom对象继承了EventEmitter对象上的方法
+
+    this.token = 'INVALID'; // 如果需要定义该类对象的字段、方法等，需加上this关键字，否则就认为是该函数中的临时变量
+    this.acceptingRequests = true;
+}
+
 // internal object
 function RemoteGameRandom(token, serviceURI) {	
-	EventEmitter.call(this);
+	EventEmitter.call(this); // call方法使得RemoteGameRandom对象继承了EventEmitter对象上的方法
+
 	var remoteRandomDataService;
 	remoteRandomDataService = new RemoteRandomDataService(serviceURI);
 	
 	this.remoteService = remoteRandomDataService;
 	this.token = token;
 	this.acceptingRequests = true;
-	this.getRandomNumber = RandomNumber;
+	this.getRandomNumber = RandomNumber; // 定义了一个getRandomNumber方法
 }
 
 util.inherits(RemoteGameRandom, EventEmitter); // 使这个类继承EventEmitter
