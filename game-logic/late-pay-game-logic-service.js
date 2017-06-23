@@ -41,13 +41,22 @@ exports.latePayStartGame = function(requestParams, response) {
 	console.log('START GAME SERVICE REQUEST PARAMS:' + JSON.stringify(requestParams, null, '/t'));
 	if (requestParams) {
 		dataRetrievalContext = RemoteDataServiceAPI.DataRetrievalContext(dataRetrievalContextJSON.TokenRandom, dataRetrievalContextJSON.TokenProgressive);
+		// 生成一个用于获取Random的对象
 		gameRandom = RandomDataServiceAPI.GameRandom(dataRetrievalContext);
+		// 生成一个用于获取Progressive的对象
 		gameProgressive = ProgressiveDataServiceAPI.GameProgressive(dataRetrievalContext);
 
+		// Get stake from request object
 		stake = GameLogicDomainAPI.TransactionAmount(requestParams);
+		// Get gameState from request.
+		// {"Phase":"IDLE","ReelOffsets":[6,6,12],"ProgressiveState":{"JackpotsStatus":[{"Id":5,"Value":{"Amount":10000026,"CurrencyCode":"GBP"},"LevelName":"progressive","LevelIndex":1,"Type":"WIDE"}],"JackpotGameEvents":[{"Determination":"LOCAL_DETERMINATION","OtherInfo":{}}],"OtherProperties":{"levelName":"progressive","amount":"100000.26£"}}}
+        // {"Command":"SPIN"}
 		gameState = GameLogicDomainAPI.GameState(requestParams);
+		console.log("(Merlin...)latePayStartGame-gameState:" + JSON.stringify(gameState));
 		gameRequest = GameLogicDomainAPI.GameRequest(requestParams);
-		GameLogicAPI.validateStartGameParameters(gameRequest.Command, stake.Amount, gameState.Phase);	
+		// Valid: GameState=IDLE, gameRequestCommand=SPIN
+		GameLogicAPI.validateStartGameParameters(gameRequest.Command, stake.Amount, gameState.Phase);
+		// Build a ProgressiveGameState to deal with pgs later.
 		newProgressiveGameState = ProgressiveDataServiceAPI.GetProgressiveGameState(stake, gameState, gameRequest,gameRandom, gameProgressive);
 		ProgressiveDataServiceAPI.AddJackpotLevelStatuses(newProgressiveGameState, stake, gameState, gameRequest, gameRandom, gameProgressive);
 

@@ -143,6 +143,7 @@ function ProgressiveGameState(jackpotsStatus, jackpotGameEvents) {
 	this.JackpotsStatus = jackpotsStatus;
 	this.JackpotGameEvents = jackpotGameEvents;
 	this.OtherProperties = {};
+	// Class method
 	this.updateJackpotsStatus = updateJackpotsStatus;
 	this.enterJackpot = EnterJackpot;
 	this.claimJackpot = ClaimJackpot;
@@ -340,8 +341,10 @@ exports.AddJackpotLevelStatuses = function(newProgressiveGameState, stake, gameS
 	});
 	
 	console.log('update jackpot status');
+	// 查看奖池状态，如果为空则创建一个
 	if(newProgressiveGameState.updateJackpotsStatus(gameProgressive, stake.CurrencyCode) === null) {
 		addEmptyJackpotLevelStatusToProgressiveGameState(newProgressiveGameState);
+		// Get random number and emit event "gameLogicProcessingComplete".
 		getGameRandomForGame(gameRandom, gameProgressive, newProgressiveGameState, stake.CurrencyCode, gameState.ReelOffsets);
 	}	
 };
